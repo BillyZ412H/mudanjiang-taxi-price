@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>牡丹江市出租车计价计算器</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #6a11cb 0%, #25fccd 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 15px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .header {
+            background: #d81e06;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+        .header h1 {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 20px;
+        }
+        .instructions {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+            border-left: 4px solid #2575fc;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 18px;
+            transition: border-color 0.3s;
+        }
+        input[type="number"]:focus {
+            border-color: #2575fc;
+            outline: none;
+        }
+        .radio-group {
+            display: flex;
+            gap: 20px;
+        }
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            background: #f1f8e9;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .radio-option.active {
+            background: #e8f5e9;
+            border: 2px solid #4caf50;
+        }
+        .radio-option input {
+            display: none;
+        }
+        .icon {
+            font-size: 24px;
+        }
+        .fuel-icon {
+            color: #d81e06;
+        }
+        .electric-icon {
+            color: #4caf50;
+        }
+        button {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(to right, #d81e06, #ff5252);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 10px rgba(216, 30, 6, 0.3);
+            margin-top: 10px;
+        }
+        button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 5px rgba(216, 30, 6, 0.3);
+        }
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            background: linear-gradient(to right, #e8f5e9, #f1f8e9);
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+            border: 2px solid #4caf50;
+        }
+        .result h2 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        .price {
+            font-size: 42px;
+            font-weight: bold;
+            color: #d81e06;
+            margin: 10px 0;
+        }
+        .breakdown {
+            margin-top: 15px;
+            text-align: left;
+            padding: 15px;
+            background-color: white;
+            border-radius: 10px;
+            font-size: 15px;
+        }
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .breakdown-total {
+            font-weight: bold;
+            color: #d81e06;
+            font-size: 18px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 2px dashed #ddd;
+        }
+        .disclaimer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #757575;
+            text-align: center;
+            padding: 0 10px;
+        }
+        .usage-tips {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .usage-tips h3 {
+            color: #d81e06;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .tip {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .tip-number {
+            background: #2575fc;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        .footer {
+            color: white;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        @media (max-width: 400px) {
+            .radio-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .price {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>牡丹江市出租车计价计算器</h1>
+            <p>根据市区巡游出租汽车计价规则制定</p>
+        </div>
+        
+        <div class="content">
+            <div class="instructions">
+                <p><i class="fas fa-info-circle"></i> 基本里程：2公里内6元，超出部分每公里1.40元（每0.5公里计费）</p>
+                <p><i class="fas fa-bolt"></i> 纯电动车免收燃油附加费</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="distance"><i class="fas fa-road"></i> 行驶里程（公里）：</label>
+                <input type="number" id="distance" min="0" step="0.1" placeholder="请输入行驶里程" inputmode="decimal">
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-car"></i> 车辆类型：</label>
+                <div class="radio-group">
+                    <div class="radio-option" id="fuelOption">
+                        <input type="radio" id="fuelCar" name="carType" value="fuel" checked>
+                        <span class="icon fuel-icon"><i class="fas fa-gas-pump"></i></span>
+                        <label for="fuelCar">燃油车</label>
+                    </div>
+                    <div class="radio-option" id="electricOption">
+                        <input type="radio" id="electricCar" name="carType" value="electric">
+                        <span class="icon electric-icon"><i class="fas fa-charging-station"></i></span>
+                        <label for="electricCar">纯电动车</label>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="calculateBtn">
+                <i class="fas fa-calculator"></i> 计算价格
+            </button>
+            
+            <div id="result" class="result">
+                <h2><i class="fas fa-receipt"></i> 预估车费</h2>
+                <div class="price" id="price">0 元</div>
+                <div class="breakdown" id="breakdown"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="usage-tips">
+        <h3><i class="fas fa-mobile-alt"></i> 手机使用指南</h3>
+        
+        <div class="tip">
+            <div class="tip-number">1</div>
+            <div>点击上方输入框输入行驶里程（公里）</div>
+        </div>
+        
+        <div class="tip">
+            <div class="tip-number">2</div>
+            <div>选择车辆类型（燃油车或纯电动车）</div>
+        </div>
+        
+        <div class="tip">
+            <div class="tip-number">3</div>
+            <div>点击"计算价格"按钮获取车费估算</div>
+        </div>
+        
+        <div class="tip">
+            <div class="tip-number">4</div>
+            <div>将本页添加到手机主屏幕方便下次使用</div>
+        </div>
+    </div>
+
+    <div class="disclaimer">
+        <p>计价规则依据牡丹江市市区巡游出租汽车计价规则制定</p>
+        <p>本计算器仅供参考，实际费用以出租车计价器为准</p>
+    </div>
+
+    <div class="footer">
+        <p>© 2023 牡丹江市出租车计价计算器</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fuelOption = document.getElementById('fuelOption');
+            const electricOption = document.getElementById('electricOption');
+            const calculateBtn = document.getElementById('calculateBtn');
+            
+            // 车辆类型选择交互
+            fuelOption.addEventListener('click', function() {
+                document.getElementById('fuelCar').checked = true;
+                fuelOption.classList.add('active');
+                electricOption.classList.remove('active');
+            });
+            
+            electricOption.addEventListener('click', function() {
+                document.getElementById('electricCar').checked = true;
+                electricOption.classList.add('active');
+                fuelOption.classList.remove('active');
+            });
+            
+            // 初始化选择状态
+            fuelOption.classList.add('active');
+            
+            // 计算按钮事件
+            calculateBtn.addEventListener('click', calculatePrice);
+            
+            // 支持按回车键计算
+            document.getElementById('distance').addEventListener('keyup', function(event) {
+                if (event.key === 'Enter') {
+                    calculatePrice();
+                }
+            });
+        });
+        
+        function calculatePrice() {
+            // 获取输入值
+            const distance = parseFloat(document.getElementById('distance').value) || 0;
+            const isElectric = document.getElementById('electricCar').checked;
+            
+            // 基本费用
+            const baseDistance = 2;
+            const basePrice = 6;
+            const perKmPrice = 1.40;
+            
+            // 计算里程费用
+            let distancePrice = basePrice;
+            let extraDistanceCost = 0;
+            
+            if (distance > baseDistance) {
+                const extraDistance = distance - baseDistance;
+                // 每0.5公里计费一次，不足0.5公里按0.5公里计算
+                const chargeUnits = Math.ceil(extraDistance / 0.5);
+                extraDistanceCost = chargeUnits * (perKmPrice * 0.5);
+                distancePrice += extraDistanceCost;
+            }
+            
+            // 计算燃油附加费
+            const fuelSurcharge = isElectric ? 0 : 1;
+            
+            // 总费用（四舍五入到元）
+            const totalPrice = Math.round(distancePrice + fuelSurcharge);
+            
+            // 显示结果
+            document.getElementById('price').textContent = totalPrice + ' 元';
+            
+            // 显示费用明细
+            let breakdownHtml = '<div class="breakdown-item">';
+            breakdownHtml += '<span>基本费用（2公里内）：</span>';
+            breakdownHtml += '<span>6元</span>';
+            breakdownHtml += '</div>';
+            
+            if (distance > baseDistance) {
+                breakdownHtml += '<div class="breakdown-item">';
+                breakdownHtml += `<span>超出里程费用：</span>`;
+                breakdownHtml += `<span>${extraDistanceCost.toFixed(2)}元</span>`;
+                breakdownHtml += '</div>';
+            }
+            
+            if (!isElectric) {
+                breakdownHtml += '<div class="breakdown-item">';
+                breakdownHtml += '<span>燃油附加费：</span>';
+                breakdownHtml += '<span>1元</span>';
+                breakdownHtml += '</div>';
+            }
+            
+            breakdownHtml += '<div class="breakdown-total">';
+            breakdownHtml += `<span>总计：</span>`;
+            breakdownHtml += `<span>${totalPrice}元</span>`;
+            breakdownHtml += '</div>';
+            
+            document.getElementById('breakdown').innerHTML = breakdownHtml;
+            document.getElementById('result').style.display = 'block';
+            
+            // 平滑滚动到结果区域
+            document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
